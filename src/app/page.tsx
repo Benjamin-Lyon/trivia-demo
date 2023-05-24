@@ -22,23 +22,31 @@ export default function Page() {
   const handleSelectQuestion = (answer) => {
     setSelectedQuestion(answer);
 
-    const isCorrect = (answer === getCorrectAnswer);
+    const isCorrect = answer === getCorrectAnswer;
     setIsAnswerCorrect(isCorrect);
   };
 
   return (
     <div>
-      <h2>First Question</h2>
-        <p>{firstQuestion}</p>
+      <h2 className="text-red-500 text-2xl font-bold">First Question</h2>
+      <p>{firstQuestion}</p>
       <h2>Possible Answers</h2>
-        <button onClick={() => handleSelectQuestion(getCorrectAnswer)}>{getCorrectAnswer}</button>
-        {getIncorrectAnswers.map((answer, index) => (
-          <button key={index} onClick={() => handleSelectQuestion(answer)} > {answer}</button>
-        ))}
-        {selectedQuestion && (
-          <p> {isAnswerCorrect ? "Correct answer!" : `Incorrect answer! The correct answer was: ${getCorrectAnswer}`} </p>
-        )}
-        {/* <pre>{JSON.stringify(questions, null, 2)}</pre> */}
+      <button onClick={() => handleSelectQuestion(getCorrectAnswer)}>{getCorrectAnswer}</button>
+      {getIncorrectAnswers.map((answer, index) => (
+        <button key={index} onClick={() => handleSelectQuestion(answer)}>
+          {" "}
+          {answer}
+        </button>
+      ))}
+      {selectedQuestion && (
+        <p>
+          {" "}
+          {isAnswerCorrect
+            ? "Correct answer!"
+            : `Incorrect answer! The correct answer was: ${getCorrectAnswer}`}{" "}
+        </p>
+      )}
+      {/* <pre>{JSON.stringify(questions, null, 2)}</pre> */}
     </div>
   );
 }
