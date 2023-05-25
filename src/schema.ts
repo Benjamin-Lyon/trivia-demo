@@ -40,7 +40,7 @@ export async function seed() {
     .addColumn('createdAt', sql`timestamp with time zone`, (cb) =>
       cb.defaultTo(sql`current_timestamp`)
     )
-    .addColumn('wins', 'integer')
+    .addColumn('wins', 'integer', cb => cb.defaultTo(0).notNull())
     .execute()
   console.log(`Created "users" table`)
   return {

@@ -15,6 +15,7 @@ export default function Page() {
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
   const [email, setEmail] = useState("");
+  const [selectedButton, setSelectedButton] = useState(null);
 
   useEffect(() => {
     axios.get(API_URL).then((response) => {
@@ -31,6 +32,8 @@ export default function Page() {
 
     const isCorrect = answer === correctAnswer;
     setIsAnswerCorrect(isCorrect);
+
+    setSelectedButton(answer);
 
     if (isCorrect) {
       registerWin(email)
@@ -56,31 +59,34 @@ export default function Page() {
           Question
         </h1>
         <p className="text-center">{questionText}</p>
-        <h2>Possible Answers</h2>
         <div className="flex flex-row flex-wrap gap-4 justify-center">
           {questionButtons.map((answer, index) => (
-            <Button key={index} onClick={() => handleSelectQuestion(answer)}>
-              {answer}
+            <Button
+              key={index}
+              onClick={() => handleSelectQuestion(answer)}
+              clicked={selectedButton === answer}
+              isCorrect={answer === correctAnswer}
+              >
+                {answer}
             </Button>
           ))}
         </div>
-        {selectedQuestion && (
-          <p>
-            {isAnswerCorrect
-              ? "Correct answer!"
-              : `Incorrect answer! The correct answer was: ${correctAnswer}`}{" "}
-          </p>
-        )}
         {/* <pre>{JSON.stringify(questions, null, 2)}</pre> */}
       </div>
     </div>
   );
 }
 
-export const Button = ({ children, onClick }) => (
+export const Button = ({ children, onClick, clicked, isCorrect }) => (
   <button
     onClick={onClick}
-    className="rounded shadow border bg-neutral-100 text-neutral-800 px-4 py-2 hover:bg-neutral-200"
+    className={`rounded shadow border px-4 py-2 hover:bg-neutral-200 ${
+      clicked
+        ? isCorrect
+          ? "bg-green-400 text-white"
+          : "bg-red-400 text-white"
+        : "bg-neutral-100 text-neutral-800"
+    }`}
   >
     {children}
   </button>

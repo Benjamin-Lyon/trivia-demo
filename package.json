@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^4.29.7",
     "@vercel/postgres": "^0.3.0",
     "@vercel/postgres-kysely": "^0.3.0",
     "axios": "^1.4.0",
