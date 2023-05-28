@@ -28,10 +28,10 @@ export default function Page() {
     });
   }, []);
 
-  // Get the first question and its correct answer
+  // Get a question and its correct answer
   const question = questions?.[questionIndex];
   const questionText = question?.question;
-  const correctAnswer = questions.length > 0 ? questions[0].correctAnswer : "";
+  const correctAnswer = questions.length > 0 ? questions[questionIndex].correctAnswer : "";
 
   // handle the selection of an answer
   const handleSelectAnswer = (answer: string) => {
@@ -101,7 +101,7 @@ export default function Page() {
   );
 }
 
-export const Button = ({ children, onClick, clicked, isCorrect, isDisabled }) => (
+const Button = ({ children, onClick, clicked, isCorrect, isDisabled }) => (
   <button
     onClick={onClick}
     className={`rounded shadow border px-4 py-2 ${
