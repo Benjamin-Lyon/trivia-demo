@@ -15,11 +15,11 @@ const registerWin = async (email: string) => {
 
 export default function Page() {
   const [questions, setQuestions] = useState([]);
-  const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
   const [email, setEmail] = useState("");
   const [selectedButton, setSelectedButton] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [showNextQuestionButton, setShowNextQuestionButton] = useState(false);
 
   // Fetch the questions from the API
   useEffect(() => {
@@ -29,23 +29,29 @@ export default function Page() {
   }, []);
 
   // Get the first question and its correct answer
-  const firstQuestion = questions?.[0];
-  const questionText = firstQuestion?.question;
+  const question = questions?.[questionIndex];
+  const questionText = question?.question;
   const correctAnswer = questions.length > 0 ? questions[0].correctAnswer : "";
 
-  // handle the selection of a question
-  const handleSelectQuestion = (answer: string) => {
-    setSelectedQuestion(answer);
+  // handle the selection of an answer
+  const handleSelectAnswer = (answer: string) => {
     setIsButtonDisabled(true);
 
     checkAnswer(answer);
     setSelectedButton(answer);
+    setShowNextQuestionButton(true);
+  };
+
+  const fetchNextQuestion = () => {
+    setQuestionIndex(questionIndex + 1);
+    setIsButtonDisabled(false);
+    setSelectedButton(null);
+    setShowNextQuestionButton(false);
   };
 
   // Check if the answer is correct and register a win if it is
   const checkAnswer = (answer: string) => {
     const isCorrect = answer === correctAnswer;
-    setIsAnswerCorrect(isCorrect);
 
     if (isCorrect) {
       registerWin(email);
@@ -55,41 +61,47 @@ export default function Page() {
   // Generate the question buttons using the useMemo hook to prevent re-rendering
   const questionButtons = useMemo(
     () =>
-      firstQuestion
+      question
         ? shuffle([
-            firstQuestion.correctAnswer,
-            ...firstQuestion.incorrectAnswers,
+            question.correctAnswer,
+            ...question.incorrectAnswers,
           ])
         : [],
-    [firstQuestion]
+    [question]
   );
 
   // Render the page
   return (
-  <div className="flex flex-col items-center h-screen justify-center">
-    <div className="w-3/4">
-      <h1 className="text-red-500 text-center text-3xl font-bold mb-4">Question</h1>
-      <p className="text-center text-xl mb-4">{questionText}</p>
-      <div className="flex flex-row flex-wrap gap-4 justify-center">
-        {questionButtons.map((answer: string, index: number) => (
-          <Button
-            key={index}
-            onClick={() => handleSelectQuestion(answer)}
-            clicked={selectedButton === answer}
-            isCorrect={answer === correctAnswer}
-            isDisabled={isButtonDisabled}
-          >
-            {answer}
-          </Button>
-        ))}
+    <div className="flex flex-col items-center h-screen justify-center">
+      <div className="w-3/4">
+        <h1 className="text-red-500 text-center text-3xl font-bold mb-4">
+          Question
+        </h1>
+        <p className="text-center text-xl mb-4">{questionText}</p>
+        <div className="flex flex-row flex-wrap gap-4 justify-center">
+          {questionButtons.map((answer: string, index: number) => (
+            <Button
+              key={index}
+              onClick={() => handleSelectAnswer(answer)}
+              clicked={selectedButton === answer}
+              isCorrect={answer === correctAnswer}
+              isDisabled={isButtonDisabled}
+            >
+              {answer}
+            </Button>
+          ))}
+        </div>
+        {showNextQuestionButton && (
+          <div className="flex flex-row flex-wrap gap-4 justify-center mt-4">
+            <GenerateNextQuestion onClick={() => fetchNextQuestion()} />
+          </div>
+        )}
       </div>
-      {/* <pre>{JSON.stringify(questions, null, 2)}</pre> */}
     </div>
-  </div>
   );
 }
 
-export const Button = ({ children, onClick, clicked, isCorrect, isDisabled}) => (
+export const Button = ({ children, onClick, clicked, isCorrect, isDisabled }) => (
   <button
     onClick={onClick}
     className={`rounded shadow border px-4 py-2 ${
@@ -105,3 +117,14 @@ export const Button = ({ children, onClick, clicked, isCorrect, isDisabled}) => 
     {children}
   </button>
 );
+
+const GenerateNextQuestion = ({ onClick}) => {
+  return <button
+    onClick={onClick}
+    className={`rounded shadow border px-4 py-2 ${
+      "bg-neutral-100 text-neutral-800 hover:bg-neutral-200"
+    }`}
+  >
+    Next Question
+  </button>
+}
