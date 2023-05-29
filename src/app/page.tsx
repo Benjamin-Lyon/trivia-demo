@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
+import { FC, PropsWithChildren, ReactNode, useEffect, useMemo, useState } from "react";
 import { shuffle } from "lodash-es";
 import { db } from "../schema";
 
@@ -13,6 +13,13 @@ const registerWin = async (email: string) => {
   });
 };
 
+const fetchQuestions= (setQuestions: (value: any[]) => void, setQuestionIndex?: (value: number) => void) => {
+  axios.get(API_URL).then((response) => {
+    setQuestions(response.data);
+    setQuestionIndex?.(0);
+  });
+}
+
 export default function Page() {
   const [questions, setQuestions] = useState([]);
   const [email, setEmail] = useState("");
@@ -23,15 +30,13 @@ export default function Page() {
 
   // Fetch the questions from the API
   useEffect(() => {
-    axios.get(API_URL).then((response) => {
-      setQuestions(response.data);
-    });
+    fetchQuestions(setQuestions)
   }, []);
 
   // Get a question and its correct answer
   const question = questions?.[questionIndex];
   const questionText = question?.question;
-  const correctAnswer = questions.length > 0 ? questions[questionIndex].correctAnswer : "";
+  const correctAnswer = questions?.length > 0 ? questions[questionIndex].correctAnswer : "";
 
   // handle the selection of an answer
   const handleSelectAnswer = (answer: string) => {
@@ -43,7 +48,12 @@ export default function Page() {
   };
 
   const fetchNextQuestion = () => {
-    setQuestionIndex(questionIndex + 1);
+    if (questionIndex === questions.length - 1) {
+      fetchQuestions(setQuestions, setQuestionIndex)
+    } else {
+      setQuestionIndex(questionIndex + 1);
+    }
+
     setIsButtonDisabled(false);
     setSelectedButton(null);
     setShowNextQuestionButton(false);
@@ -75,7 +85,7 @@ export default function Page() {
     <div className="flex flex-col items-center h-screen justify-center">
       <div className="w-3/4">
         <h1 className="text-red-500 text-center text-3xl font-bold mb-4">
-          Question
+          Question {questionIndex + 1}
         </h1>
         <p className="text-center text-xl mb-4">{questionText}</p>
         <div className="flex flex-row flex-wrap gap-4 justify-center">
@@ -101,24 +111,32 @@ export default function Page() {
   );
 }
 
-const Button = ({ children, onClick, clicked, isCorrect, isDisabled }) => (
+type ButtonProps = {
+  onClick: () => void,
+  clicked: boolean,
+  isCorrect: boolean,
+  isDisabled: boolean,
+  children?: ReactNode,
+}
+
+export const Button: FC<ButtonProps> = ({ children, onClick, clicked, isCorrect, isDisabled }) => (
   <button
     onClick={onClick}
     className={`rounded shadow border px-4 py-2 ${
       // hover:bg-neutral-200 commented out until hover for answers is implemented
       clicked
         ? isCorrect
-          ? "bg-green-400 text-white"
-          : "bg-red-400 text-white"
-        : "bg-neutral-100 text-neutral-800"
-    }`}
+          ? "bg-green-400 text-white hover:bg-green-200"
+          : "bg-red-400 text-white hover:bg-red-200"
+        : "bg-neutral-100 text-neutral-800 hover:bg-neutral-200"
+    } ${isCorrect ? "disabled:bg-green-500" :""}`}
     disabled={isDisabled}
   >
     {children}
   </button>
 );
 
-const GenerateNextQuestion = ({ onClick}) => {
+const GenerateNextQuestion = ({ onClick }) => {
   return <button
     onClick={onClick}
     className={`rounded shadow border px-4 py-2 ${
