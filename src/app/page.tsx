@@ -52,8 +52,7 @@ export default function Page() {
   };
 
   const fetchNextQuestion = () => {
-    if (questionIndex === questions.length - 1) {
-      setQuizCompleted(true);
+    if (questionIndex === questions.length - 1 && !quizCompleted) {
       fetchQuestions(setQuestions, setQuestionIndex)
     } else {
       setQuestionIndex(questionIndex + 1);
@@ -113,7 +112,7 @@ export default function Page() {
           </div>
         )}
       </div>
-      {quizCompleted && <ModalContent score={quizScore} />}
+      {quizCompleted && <ModalContent score={quizScore} questionLength = {questions.length} setQuizCompleted={setQuizCompleted} />}
     </div>
   );
 }
@@ -136,7 +135,7 @@ export const Button: FC<ButtonProps> = ({ children, onClick, clicked, isCorrect,
           ? "bg-green-400 text-white hover:bg-green-200"
           : "bg-red-400 text-white hover:bg-red-200"
         : "bg-neutral-100 text-neutral-800 hover:bg-neutral-200"
-    } ${isCorrect ? "disabled:bg-green-500" :""}`}
+    } ${isCorrect ? "disabled:bg-green-400 disabled:hover:bg-green-200" :""}`}
     disabled={isDisabled}
   >
     {children}
