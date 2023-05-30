@@ -3,6 +3,7 @@ import axios from "axios";
 import { FC, PropsWithChildren, ReactNode, useEffect, useMemo, useState } from "react";
 import { shuffle } from "lodash-es";
 import { db } from "../schema";
+import ModalContent from "./Modal";
 
 const API_URL = "https://the-trivia-api.com/api/questions";
 
@@ -27,6 +28,9 @@ export default function Page() {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [showNextQuestionButton, setShowNextQuestionButton] = useState(false);
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [quizScore, setQuizScore] = useState(0);
+
 
   // Fetch the questions from the API
   useEffect(() => {
@@ -49,6 +53,7 @@ export default function Page() {
 
   const fetchNextQuestion = () => {
     if (questionIndex === questions.length - 1) {
+      setQuizCompleted(true);
       fetchQuestions(setQuestions, setQuestionIndex)
     } else {
       setQuestionIndex(questionIndex + 1);
@@ -65,6 +70,7 @@ export default function Page() {
 
     if (isCorrect) {
       registerWin(email);
+      setQuizScore(quizScore + 1);
     }
   };
 
@@ -107,6 +113,7 @@ export default function Page() {
           </div>
         )}
       </div>
+      {quizCompleted && <ModalContent score={quizScore} />}
     </div>
   );
 }
