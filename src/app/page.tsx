@@ -4,6 +4,7 @@ import { FC, PropsWithChildren, ReactNode, useEffect, useMemo, useState } from "
 import { shuffle } from "lodash-es";
 import { db } from "../schema";
 import ModalContent from "./Modal";
+import { Button } from "./Button";
 
 const API_URL = "https://the-trivia-api.com/api/questions";
 
@@ -98,6 +99,17 @@ export default function Page() {
     }
   };
 
+  const GenerateNextQuestion = ({ onClick }) => {
+    return (
+      <button
+        onClick={onClick}
+        className={`rounded shadow border px-4 py-2 ${"bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white"}`}
+      >
+        Next Question
+      </button>
+    );
+  };
+
   // Generate the question buttons using the useMemo hook to prevent re-rendering
   const questionButtons = useMemo(
     () =>
@@ -112,17 +124,19 @@ export default function Page() {
 
   // Render the page
   return (
-    <div className="flex flex-col items-center h-screen justify-center">
+    <div className="flex flex-col items-center h-screen justify-center bg-slate-200">
       <div className="w-3/4">
         {!showNextQuestionButton && (
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-200">
             <p className="text-orange-400 text-4x2 font-bold">{timer}</p>
           </div>
         )}
-        <h1 className="text-red-500 text-center text-3xl font-bold mb-4">
-          Question {questionIndex + 1}
-        </h1>
-        <p className="text-center text-xl mb-4">{questionText}</p>
+        <div className="border-b border-gray-200 bg-white px-4 py-5 sm:px-6 mb-4">
+          <h1 className="text-red-500 text-center text-3xl font-bold mb-4">
+            Question {questionIndex + 1}
+          </h1>
+          <p className="text-center text-xl">{questionText}</p>
+        </div>
         <div className="flex flex-row flex-wrap gap-4 justify-center">
           {questionButtons.map((answer: string, index: number) => (
             <Button
@@ -131,7 +145,6 @@ export default function Page() {
               clicked={selectedButton === answer}
               isCorrect={answer === correctAnswer}
               isDisabled={isButtonDisabled}
-              timer={timer}
             >
               {answer}
             </Button>
@@ -152,41 +165,4 @@ export default function Page() {
       )}
     </div>
   );
-}
-
-type ButtonProps = {
-  onClick: () => void,
-  clicked: boolean,
-  isCorrect: boolean,
-  isDisabled: boolean,
-  children?: ReactNode,
-  timer: number
-}
-
-export const Button: FC<ButtonProps> = ({ children, onClick, clicked, isCorrect, isDisabled, timer}) => (
-  <button
-    onClick={onClick}
-    className={`rounded shadow border px-4 py-2 ${
-      // hover:bg-neutral-200 commented out until hover for answers is implemented
-      clicked
-        ? isCorrect
-          ? "bg-green-400 text-white hover:bg-green-200"
-          : "bg-red-400 text-white hover:bg-red-200"
-        : "bg-neutral-100 text-neutral-800 hover:bg-neutral-200"
-    } ${isCorrect ? "disabled:bg-green-400 disabled:hover:bg-green-200" :""}`}
-    disabled={isDisabled}
-  >
-    {children}
-  </button>
-);
-
-const GenerateNextQuestion = ({ onClick }) => {
-  return <button
-    onClick={onClick}
-    className={`rounded shadow border px-4 py-2 ${
-      "bg-neutral-100 text-neutral-800 hover:bg-neutral-200"
-    }`}
-  >
-    Next Question
-  </button>
 }
