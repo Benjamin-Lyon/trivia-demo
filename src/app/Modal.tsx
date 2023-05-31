@@ -42,8 +42,8 @@ export default function ModalContent({
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <div>
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-200">
-                    <p className="text-orange-400 text-4x2 font-bold">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-200">
+                    <p className="text-green-400 text-4x2 font-bold">
                       {score}
                     </p>
                   </div>

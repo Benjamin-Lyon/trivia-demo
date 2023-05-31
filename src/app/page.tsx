@@ -30,12 +30,30 @@ export default function Page() {
   const [showNextQuestionButton, setShowNextQuestionButton] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizScore, setQuizScore] = useState(0);
+  const [timer, setTimer] = useState(15);
 
 
   // Fetch the questions from the API
   useEffect(() => {
     fetchQuestions(setQuestions)
   }, []);
+
+  useEffect(() => {
+    let countdown = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer === 1) {
+          handleTimedOut();
+          clearInterval(countdown);
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(countdown);
+      setTimer(15);
+    };
+  }, [questionIndex, quizCompleted]);
 
   // Get a question and its correct answer
   const question = questions?.[questionIndex];
@@ -53,7 +71,8 @@ export default function Page() {
 
   const fetchNextQuestion = () => {
     if (questionIndex === questions.length - 1 && !quizCompleted) {
-      fetchQuestions(setQuestions, setQuestionIndex)
+      fetchQuestions(setQuestions, setQuestionIndex);
+      setQuizCompleted(true);
     } else {
       setQuestionIndex(questionIndex + 1);
     }
@@ -62,6 +81,12 @@ export default function Page() {
     setSelectedButton(null);
     setShowNextQuestionButton(false);
   };
+
+  const handleTimedOut = () => {
+    setIsButtonDisabled(true);
+    setShowNextQuestionButton(true);
+  }
+
 
   // Check if the answer is correct and register a win if it is
   const checkAnswer = (answer: string) => {
@@ -89,6 +114,11 @@ export default function Page() {
   return (
     <div className="flex flex-col items-center h-screen justify-center">
       <div className="w-3/4">
+        {!showNextQuestionButton && (
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-200">
+            <p className="text-orange-400 text-4x2 font-bold">{timer}</p>
+          </div>
+        )}
         <h1 className="text-red-500 text-center text-3xl font-bold mb-4">
           Question {questionIndex + 1}
         </h1>
@@ -101,6 +131,7 @@ export default function Page() {
               clicked={selectedButton === answer}
               isCorrect={answer === correctAnswer}
               isDisabled={isButtonDisabled}
+              timer={timer}
             >
               {answer}
             </Button>
@@ -112,7 +143,13 @@ export default function Page() {
           </div>
         )}
       </div>
-      {quizCompleted && <ModalContent score={quizScore} questionLength = {questions.length} setQuizCompleted={setQuizCompleted} />}
+      {quizCompleted && (
+        <ModalContent
+          score={quizScore}
+          questionLength={questions.length}
+          setQuizCompleted={setQuizCompleted}
+        />
+      )}
     </div>
   );
 }
@@ -123,9 +160,10 @@ type ButtonProps = {
   isCorrect: boolean,
   isDisabled: boolean,
   children?: ReactNode,
+  timer: number
 }
 
-export const Button: FC<ButtonProps> = ({ children, onClick, clicked, isCorrect, isDisabled }) => (
+export const Button: FC<ButtonProps> = ({ children, onClick, clicked, isCorrect, isDisabled, timer}) => (
   <button
     onClick={onClick}
     className={`rounded shadow border px-4 py-2 ${
