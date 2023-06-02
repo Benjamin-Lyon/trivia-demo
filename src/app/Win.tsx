@@ -1,0 +1,1 @@
+export const Win = ({show }) => (<div className={show ? "block" : "hidden"}>Hello</div>)
