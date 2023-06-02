@@ -19,9 +19,23 @@ export async function POST(request: Request) {
   const updatedUser = await db
     .updateTable("users")
     .where("id", "=", existingUser.id)
-    .set({ wins: (existingUser.wins ?? 0) + res.quizScore })
+    .set({ wins: (existingUser.wins ?? 0) + res.score })
     .returningAll()
     .executeTakeFirst();
 
-    return NextResponse.json(updatedUser)
+  return NextResponse.json(updatedUser);
+}
+
+export async function GET(request: Request) {
+  const {searchParams} = new URL(request.url);
+  const email = searchParams.get("email");
+
+  const fetchUserWins = await db
+    .selectFrom("users")
+    .where("email", "=", email)
+    .select("wins")
+    .executeTakeFirst();
+
+  const count = fetchUserWins?.wins ?? 0;
+  return NextResponse.json({count});
 }

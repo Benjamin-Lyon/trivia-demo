@@ -3,19 +3,15 @@ import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/24/outline";
 
 export default function ModalContent({
+  open,
   score,
   questionLength,
   correctAnswersCount,
+  nextQuiz,
 }) {
-  const [open, setOpen] = useState(true);
-
-  const handleNextQuiz = () => {
-    setOpen(false);
-  };
-
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+      <Dialog as="div" className="relative z-10" onClose={nextQuiz}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -54,7 +50,7 @@ export default function ModalContent({
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
                         You scored {score} out of {questionLength} questions.
-                        Good job! Your total number of correct answers is {correctAnswersCount}.
+                        Good job! <br /><br /> Total score is {correctAnswersCount}.
                       </p>
                     </div>
                   </div>
