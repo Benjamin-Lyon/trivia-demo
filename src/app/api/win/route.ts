@@ -27,7 +27,7 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const {searchParams} = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const email = searchParams.get("email");
 
   const fetchUserWins = await db
@@ -37,5 +37,5 @@ export async function GET(request: Request) {
     .executeTakeFirst();
 
   const count = fetchUserWins?.wins ?? 0;
-  return NextResponse.json({count});
+  return NextResponse.json({ count });
 }

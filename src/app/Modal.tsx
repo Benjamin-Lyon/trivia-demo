@@ -50,7 +50,8 @@ export default function ModalContent({
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
                         You scored {score} out of {questionLength} questions.
-                        Good job! <br /><br /> Total score is {correctAnswersCount}.
+                        Good job! <br />
+                        <br /> Your total score is {correctAnswersCount}.
                       </p>
                     </div>
                   </div>

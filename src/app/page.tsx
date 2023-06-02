@@ -21,7 +21,7 @@ const registerWin = async (email: string, score: Number) => {
     method: "POST",
     body: JSON.stringify({ email, score }),
   });
-  const body: {count: number} = await res.json();
+  const body: { count: number } = await res.json();
   return body.count;
 };
 
@@ -70,8 +70,8 @@ const useQuiz = (email: string) => {
     (async () => {
       const wins = await fetchCorrectAnswerCount(email);
       setTotalScore(wins);
-    })()
-  }, [email])
+    })();
+  }, [email]);
 
   const correct = selectedAnswer === question?.correctAnswer;
   const timedOut = timer === 0;
@@ -89,13 +89,14 @@ const useQuiz = (email: string) => {
   }, []);
 
   // if there is a selected answer, you can pick a new Q
-  const nextQuestion = answered || status === "start" || timedOut
-    ? () => {
-        setQuestionIndex((i) => i + 1);
-        setSelectedAnswer(null);
-        setStatus("in_progress");
-      }
-    : null;
+  const nextQuestion =
+    answered || status === "start" || timedOut
+      ? () => {
+          setQuestionIndex((i) => i + 1);
+          setSelectedAnswer(null);
+          setStatus("in_progress");
+        }
+      : null;
 
   // Generate the question buttons using the useMemo hook to prevent re-rendering
   const answers = useMemo(
@@ -119,18 +120,21 @@ const useQuiz = (email: string) => {
       }
     : null;
 
-  const nextQuiz = questionIndex > questions.length - 1 ? () => {
-    (async () => {
-      setStatus("loading");
-      const questions = await fetchQuestions();
-      setQuestions(questions);
-      setQuestionIndex(-1);
-      const newTotalScore = await registerWin(email, score);
-      setTotalScore(newTotalScore);
-      setScore(0);
-      setStatus("start");
-    })()
-  } : null;
+  const nextQuiz =
+    questionIndex > questions.length - 1
+      ? () => {
+          (async () => {
+            setStatus("loading");
+            const questions = await fetchQuestions();
+            setQuestions(questions);
+            setQuestionIndex(-1);
+            const newTotalScore = await registerWin(email, score);
+            setTotalScore(newTotalScore);
+            setScore(0);
+            setStatus("start");
+          })();
+        }
+      : null;
 
   // Question countdown timer
   useEffect(() => {
