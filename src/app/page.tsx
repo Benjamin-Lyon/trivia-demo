@@ -126,12 +126,13 @@ export default function Page() {
   // Render the page
   return (
     <div className="flex flex-col items-center h-screen justify-center bg-slate-200">
-        <div className="flex flex-row mb-100">
+        <div className="flex flex-row mb-4">
           <input
             type="email"
             value={email}
             placeholder="Enter your email"
             className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
       <div className="w-2/4">
