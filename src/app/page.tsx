@@ -46,7 +46,7 @@ type Question = {
   incorrectAnswers: string[];
 };
 
-const TIMER_START = 5;
+const TIMER_START = 15;
 
 /**
  * Given an email address, this starts
@@ -220,7 +220,7 @@ export default function Page() {
       <p className="text-sm text-gray-500 mb-4">
         Enter your email below to begin.
       </p>
-      <div className="flex flex-row mb-16">
+      <div className="flex flex-row mb-8">
         <input
           type="email"
           value={emailInner}
@@ -243,7 +243,7 @@ export default function Page() {
       {status === "in_progress" ? (
         <div className="w-2/4">
           {correctAnswer === null ? (
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 mb-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 mb-8">
               <p className="text-white text-4x2 font-bold">{timeLeft}</p>
             </div>
           ) : null}
