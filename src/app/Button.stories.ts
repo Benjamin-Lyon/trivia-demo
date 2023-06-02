@@ -1,4 +1,4 @@
-import { Button } from "./page";
+import { Button } from "./Button";
 import { action } from "@storybook/addon-actions";
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction
 export default {
