@@ -200,7 +200,6 @@ export default function Page() {
           correctAnswersCount={correctAnswersCount}
         />
       )}
-      <div> {correctAnswersCount} </div>
     </div>
   );
 }
