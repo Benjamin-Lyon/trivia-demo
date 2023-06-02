@@ -12,7 +12,7 @@ export default async function Cart({
     <div>
       {users.map((row) => (
         <div key={row.id}>
-          {row.id} - {row.email}
+          {row.id} - {row.email} - {row.wins}
         </div>
       ))}
     </div>

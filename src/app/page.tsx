@@ -8,10 +8,10 @@ import { Button } from "./Button";
 
 const API_URL = "https://the-trivia-api.com/api/questions";
 
-const registerWin = async (email: string) => {
+const registerWin = async (email: string, quizScore: Number) => {
   const res = await fetch("/api/win", {
     method: "POST",
-    body: JSON.stringify({ email }),
+    body: JSON.stringify({ email, quizScore }),
   });
 };
 
@@ -30,8 +30,10 @@ export default function Page() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [showNextQuestionButton, setShowNextQuestionButton] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [resetQuiz, setResetQuiz] = useState(false);
   const [quizScore, setQuizScore] = useState(0);
   const [timer, setTimer] = useState(15);
+  const [displayQuiz, setDisplayQuiz] = useState(false);
 
 
   // Fetch the questions from the API
@@ -55,7 +57,7 @@ export default function Page() {
       clearInterval(countdown);
       setTimer(15);
     };
-  }, [questionIndex, quizCompleted]);
+  }, [questionIndex, quizCompleted, displayQuiz]);
 
   // Get a question and its correct answer
   const question = questions?.[questionIndex];
@@ -74,6 +76,7 @@ export default function Page() {
   const fetchNextQuestion = () => {
     if (questionIndex === questions.length - 1 && !quizCompleted) {
       fetchQuestions(setQuestions, setQuestionIndex);
+      registerWin(email, quizScore);
       setQuizCompleted(true);
     } else {
       setQuestionIndex(questionIndex + 1);
@@ -89,13 +92,25 @@ export default function Page() {
     setShowNextQuestionButton(true);
   }
 
+  const handleResetQuiz = () => {
+    if (quizCompleted) {
+      setQuizCompleted(false);
+      setQuizScore(0);
+      setResetQuiz(false);
+    }
+  };
+
+  useEffect(() => {
+    const shouldDisplayQuiz = email.trim() !== "";
+    setDisplayQuiz(shouldDisplayQuiz);
+  })
+
 
   // Check if the answer is correct and register a win if it is
   const checkAnswer = (answer: string) => {
     const isCorrect = answer === correctAnswer;
 
     if (isCorrect) {
-      registerWin(email);
       setQuizScore(quizScore + 1);
     }
   };
@@ -126,53 +141,57 @@ export default function Page() {
   // Render the page
   return (
     <div className="flex flex-col items-center h-screen justify-center bg-slate-200">
-        <div className="flex flex-row mb-4">
-          <input
-            type="email"
-            value={email}
-            placeholder="Enter your email"
-            className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-      <div className="w-2/4">
-        {!showNextQuestionButton && (
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 mb-4">
-            <p className="text-white text-4x2 font-bold">{timer}</p>
-          </div>
-        )}
-        <div className="bg-white px-4 py-4 sm:px-6 mb-4">
-          <h1 className="text-red-500 text-center text-3xl font-bold mb-2">
-            Question {questionIndex + 1}
-          </h1>
-          <p className="text-center text-xl">{questionText}</p>
-          <div className="flex flex-row flex-wrap gap-4 mt-2 justify-center">
-            {questionButtons.map((answer: string, index: number) => (
-              <Button
-                key={index}
-                onClick={() => handleSelectAnswer(answer)}
-                clicked={selectedButton === answer}
-                isCorrect={answer === correctAnswer}
-                isDisabled={isButtonDisabled}
-              >
-                {answer}
-              </Button>
-            ))}
-          </div>
-        </div>
-        {showNextQuestionButton && (
-          <div className="flex flex-row flex-wrap gap-4 justify-center mt-4 mb-4">
-            <GenerateNextQuestion onClick={() => fetchNextQuestion()} />
-          </div>
-        )}
+      <div className="flex flex-row mb-4">
+        <input
+          type="email"
+          value={email}
+          placeholder="Enter your email"
+          className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          onChange={(e) => setEmail(e.target.value)}
+        />
       </div>
+      {displayQuiz && (
+        <div className="w-2/4">
+          {!showNextQuestionButton && (
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 mb-4">
+              <p className="text-white text-4x2 font-bold">{timer}</p>
+            </div>
+          )}
+          <div className="bg-white px-4 py-4 sm:px-6 mb-4">
+            <h1 className="text-red-500 text-center text-3xl font-bold mb-2">
+              Question {questionIndex + 1}
+            </h1>
+            <p className="text-center text-xl">{questionText}</p>
+            <div className="flex flex-row flex-wrap gap-4 mt-2 justify-center">
+              {questionButtons.map((answer: string, index: number) => (
+                <Button
+                  key={index}
+                  onClick={() => handleSelectAnswer(answer)}
+                  clicked={selectedButton === answer}
+                  isCorrect={answer === correctAnswer}
+                  isDisabled={isButtonDisabled}
+                >
+                  {answer}
+                </Button>
+              ))}
+            </div>
+          </div>
+          {showNextQuestionButton && (
+            <div className="flex flex-row flex-wrap gap-4 justify-center mt-4 mb-4">
+              <GenerateNextQuestion onClick={() => fetchNextQuestion()} />
+            </div>
+          )}
+        </div>
+      )}
       {quizCompleted && (
         <ModalContent
           score={quizScore}
           questionLength={questions.length}
-          setQuizCompleted={setQuizCompleted}
+          handleResetQuiz={handleResetQuiz}
+          correctAnswersCount={correctAnswersCount}
         />
       )}
+      <div> {correctAnswersCount} </div>
     </div>
   );
 }
