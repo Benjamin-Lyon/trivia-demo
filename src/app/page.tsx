@@ -30,6 +30,7 @@ const fetchQuestions = () =>
     return response.data;
   });
 
+// returns the number of correct answers for a given email
 const fetchCorrectAnswerCount = async (email: string) => {
   try {
     const res = await axios.get(`/api/win?email=${email}`);
@@ -49,7 +50,7 @@ type Question = {
 const TIMER_START = 15;
 
 /**
- * Given an email address, this starts
+ * Custom hook that, given an email address, this starts
  * a quiz session for that address.
  */
 const useQuiz = (email: string) => {
@@ -120,6 +121,7 @@ const useQuiz = (email: string) => {
       }
     : null;
 
+  // if there are no more questions, you can start a new quiz
   const nextQuiz =
     questionIndex > questions.length - 1
       ? () => {
@@ -209,13 +211,11 @@ export default function Page() {
     nextQuiz,
   } = useQuiz(email);
 
-  const dummyFunction = () => {};
-
   // Render the page
   return (
     <div className="flex flex-col items-center h-screen justify-center bg-slate-200">
       <h1 className="text-red-500 text-center text-3xl font-bold mb-2">
-        Welcome to the Trivia Quiz!
+        Trivia Demo!
       </h1>
       <p className="text-sm text-gray-500 mb-4">
         Enter your email below to begin.
@@ -275,7 +275,7 @@ export default function Page() {
       ) : null}
       <ModalContent
         open={nextQuiz !== null}
-        nextQuiz={nextQuiz ?? dummyFunction}
+        nextQuiz={nextQuiz ?? (() => console.log("No next quiz function provided"))}
         score={score}
         questionLength={10}
         correctAnswersCount={totalScore + score}
