@@ -30,10 +30,11 @@ export default function Page() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [showNextQuestionButton, setShowNextQuestionButton] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const [resetQuiz, setResetQuiz] = useState(false);
   const [quizScore, setQuizScore] = useState(0);
   const [timer, setTimer] = useState(15);
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
   const [displayQuiz, setDisplayQuiz] = useState(false);
+  const [displayStartQuiz, setDisplayStartQuiz] = useState(false);
 
 
   // Fetch the questions from the API
@@ -74,10 +75,11 @@ export default function Page() {
   };
 
   const fetchNextQuestion = () => {
-    if (questionIndex === questions.length - 1 && !quizCompleted) {
-      fetchQuestions(setQuestions, setQuestionIndex);
+    if (questionIndex === questions.length - 1) {
       registerWin(email, quizScore);
       setQuizCompleted(true);
+      handleResetQuiz();
+      fetchQuestions(setQuestions, setQuestionIndex);
     } else {
       setQuestionIndex(questionIndex + 1);
     }
@@ -93,16 +95,14 @@ export default function Page() {
   }
 
   const handleResetQuiz = () => {
-    if (quizCompleted) {
-      setQuizCompleted(false);
-      setQuizScore(0);
-      setResetQuiz(false);
-    }
+    setDisplayStartQuiz(false);
+    setDisplayQuiz(false);
+    // setQuizCompleted(false);
   };
 
   useEffect(() => {
-    const shouldDisplayQuiz = email.trim() !== "";
-    setDisplayQuiz(shouldDisplayQuiz);
+    const shouldDisplayStartQuiz = email.trim() !== "";
+    setDisplayStartQuiz(shouldDisplayStartQuiz);
   })
 
 
@@ -150,6 +150,16 @@ export default function Page() {
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
+      {displayStartQuiz && !displayQuiz && (
+        <div>
+          <button
+            onClick={() => handleStartQuiz()}
+            className={`rounded shadow border px-4 py-2 ${"bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white"}`}
+          >
+            Start Quiz
+          </button>
+        </div>
+      )}
       {displayQuiz && (
         <div className="w-2/4">
           {!showNextQuestionButton && (
@@ -187,7 +197,6 @@ export default function Page() {
         <ModalContent
           score={quizScore}
           questionLength={questions.length}
-          handleResetQuiz={handleResetQuiz}
           correctAnswersCount={correctAnswersCount}
         />
       )}

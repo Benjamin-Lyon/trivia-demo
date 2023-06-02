@@ -5,14 +5,12 @@ import { CheckIcon } from "@heroicons/react/24/outline";
 export default function ModalContent({
   score,
   questionLength,
-  handleResetQuiz,
   correctAnswersCount,
 }) {
   const [open, setOpen] = useState(true);
 
   const handleNextQuiz = () => {
     setOpen(false);
-    handleResetQuiz();
   };
 
   return (
@@ -60,15 +58,6 @@ export default function ModalContent({
                       </p>
                     </div>
                   </div>
-                </div>
-                <div className="flex justify-center mt-5 sm:mt-6">
-                  <button
-                    type="button"
-                    className="inline-flex min-w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    onClick={() => handleNextQuiz()}
-                  >
-                    Next Quiz
-                  </button>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
