@@ -18,7 +18,6 @@ export const Button: FC<ButtonProps> = ({
   <button
     onClick={onClick}
     className={`rounded shadow border px-4 py-2 ${
-      // hover:bg-neutral-200 commented out until hover for answers is implemented
       clicked
         ? isCorrect
           ? "bg-green-500 text-white hover:bg-green-400"
